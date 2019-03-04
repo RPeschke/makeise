@@ -13,11 +13,17 @@
 
 import sys
 import os
-import ConfigParser
-
+import six
+try:
+    import configparser
+except:
+    from six.moves import configparser
+   
+ConfigParser=configparser
+    
 def printusage():
     """Print usage information & exit"""
-    print "Usage: %s inputfile <outputfile>"%sys.argv[0]
+    print("Usage: %s inputfile <outputfile>"%sys.argv[0])
 
 class ISEModify(object):
     def __init__(self):
@@ -253,8 +259,8 @@ def main(args = None):
         outputfile = args[1]
 
     
-    print "Using %s input file to make %s"%(inputfile, outputfile)
-    print ""
+    print("Using %s input file to make %s"%(inputfile, outputfile))
+    print("")
 
     basedir = os.path.dirname(inputfile)
     outdir = os.path.dirname(outputfile)
@@ -307,9 +313,9 @@ def main(args = None):
                 fpga_family = val        
         
     fpga = (fpga_family, fpga_device, fpga_package, fpga_speed)
-    print "FPGA = %s %s in %s%s"%(fpga[0], fpga[1], fpga[2], fpga[3])
+    print("FPGA = %s %s in %s%s"%(fpga[0], fpga[1], fpga[2], fpga[3]))
 
-    print "**Verilog Sources:"
+    print("**Verilog Sources:")
     if config.has_section('Verilog Files'):
         for vf in config.options('Verilog Files'):
             vSetup = config.get('Verilog Files', vf)
@@ -318,9 +324,9 @@ def main(args = None):
             else:
                 vf = makeRelPath(basedir, vf, outdir)
             ise.addVerilog(vf)
-            print "   %s"%vf
+            print("   %s"%vf)
 
-    print "**VHDL Sources:"
+    print("**VHDL Sources:")
     if config.has_section('VHDL Files'):
         for vhdlf in config.options('VHDL Files'):
             vhdlSetup = config.get('VHDL Files', vhdlf)
@@ -329,25 +335,25 @@ def main(args = None):
             else:
                 vhdlf = makeRelPath(basedir, vhdlf, outdir)
             ise.addVhdl(vhdlf)
-            print "   %s"%vhdlf
+            print("   %s"%vhdlf)
 
-    print "**UCF Files:"
+    print("**UCF Files:")
     if config.has_section('UCF Files'):
         for uf in config.options('UCF Files'):
             uf = makeRelPath(basedir, uf, outdir)
             ise.addUCF(uf)
-            print "   %s"%uf
+            print("   %s"%uf)
 
-    print "**XCO Files:"
+    print("**XCO Files:")
     if config.has_section('CoreGen Files'):
         for cf in config.options('CoreGen Files'):
             ise.addUCF(os.path.join("coregen", cf))
             cgSetup = config.get('CoreGen Files', cf)
-            print "   %s"%cf
+            print("   %s"%cf)
             if cgSetup is not None:
                 parseCoregenSection(config, cgSetup, cf, fpga, basedir, outdir)
 
-    print ""
+    print("")
     ise.saveProject(outputfile)
 
 if __name__ == "__main__":
